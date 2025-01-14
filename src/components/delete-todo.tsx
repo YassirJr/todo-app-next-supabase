@@ -6,20 +6,18 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
-import {createClient} from "@/utils/supabase/client";
-import {SupabaseClient} from "@supabase/supabase-js";
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
 import {useTodos} from "@/store/store";
+import {todosService} from "@/services/todosService";
 
 export default function DeleteTodo({id}: { id: number }) {
-    const supabase: SupabaseClient = createClient()
-    const deleteTodoFromStore = useTodos(state => state.removeTodo)
+    const {removeTodo} = useTodos()
 
     const handleDelete = async () => {
-        const response = await supabase.from('todos').delete().eq('id', id)
+        const response = await todosService.delete(id)
         if (response.status === 204) {
-            deleteTodoFromStore(id)
+            removeTodo(id)
             toast.success('Todo deleted successfully')
         } else {
             toast.error('Failed to delete todo')
